@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmic Dreams | Interactive Galaxy</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#03030f;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+header{position:absolute;top:25px;width:100%;text-align:center;z-index:2;padding:0 15px}
+h1{font-size:clamp(28px,5vw,54px);margin:0;letter-spacing:5px;background:linear-gradient(90deg,#a6c8ff,#f4b8ff,#fff);color:transparent;background-clip:text}
+header p{color:#b9b8e8;letter-spacing:3px;font-size:12px}
+.galaxy{position:absolute;width:min(85vw,650px);height:min(85vw,650px);max-height:75vh;max-width:75vh;left:50%;top:53%;transform:translate(-50%,-50%);border-radius:50%;z-index:1}
+.nebula{position:absolute;inset:15%;border-radius:50%;background:radial-gradient(circle,#9d4edd44,#5425a044 35%,#17255422 60%,transparent 72%);filter:blur(20px);animation:pulse 5s infinite alternate}
+.sun{position:absolute;left:50%;top:50%;width:65px;height:65px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff7bf,#ffb347 35%,#ff5e62 70%);box-shadow:0 0 25px #ffb347,0 0 65px #ff6bd6,0 0 110px #9b5cff}
+.orbit{position:absolute;left:50%;top:50%;border:1px solid #aab5ff3d;border-radius:50%;transform:translate(-50%,-50%) rotate(-18deg)}
+.o1{width:23%;height:23%}.o2{width:38%;height:38%}.o3{width:55%;height:55%}.o4{width:73%;height:73%}.o5{width:91%;height:91%}
+.planet{position:absolute;left:50%;top:50%;border:0;border-radius:50%;cursor:pointer;transition:filter .3s,scale .3s;z-index:4}
+.planet:hover{filter:brightness(1.5);scale:1.25}
+.mercury{width:12px;height:12px;background:linear-gradient(135deg,#ddd,#777);box-shadow:0 0 12px #ddd;animation:orbit1 9s linear infinite}
+.venus{width:20px;height:20px;background:linear-gradient(135deg,#ffe2a3,#bb653c);box-shadow:0 0 15px #ffb66b;animation:orbit2 15s linear infinite}
+.earth{width:23px;height:23px;background:radial-gradient(circle at 30% 25%,#fff,#55e6ff 20%,#2375e8 50%,#164080);box-shadow:0 0 20px #49c9ff;animation:orbit3 22s linear infinite}
+.mars{width:17px;height:17px;background:linear-gradient(135deg,#ffbd9a,#cf392c);box-shadow:0 0 13px #ff684c;animation:orbit4 30s linear infinite}
+.jupiter{width:35px;height:35px;background:repeating-linear-gradient(0deg,#c78a62 0 5px,#f3d0a1 5px 9px,#945d55 9px 12px);box-shadow:0 0 18px #e4ae8b;animation:orbit5 40s linear infinite}
+@keyframes orbit1{from{transform:rotate(0deg) translateX(11.5vw) rotate(0deg)}to{transform:rotate(360deg) translateX(11.5vw) rotate(-360deg)}}
+@keyframes orbit2{from{transform:rotate(0deg) translateX(19vw) rotate(0deg)}to{transform:rotate(360deg) translateX(19vw) rotate(-360deg)}}
+@keyframes orbit3{from{transform:rotate(0deg) translateX(27.5vw) rotate(0deg)}to{transform:rotate(360deg) translateX(27.5vw) rotate(-360deg)}}
+@keyframes orbit4{from{transform:rotate(0deg) translateX(36.5vw) rotate(0deg)}to{transform:rotate(360deg) translateX(36.5vw) rotate(-360deg)}}
+@keyframes orbit5{from{transform:rotate(0deg) translateX(45vw) rotate(0deg)}to{transform:rotate(360deg) translateX(45vw) rotate(-360deg)}}
+.label{position:absolute;left:50%;top:50%;transform:translate(-50%,0);font-size:11px;color:#e2ddff;pointer-events:none;text-shadow:0 0 8px #000}
+.info{position:absolute;bottom:25px;left:50%;transform:translateX(-50%);width:min(90%,390px);padding:18px 20px;background:#10102bd9;border:1px solid #8884ff55;border-radius:18px;text-align:center;z-index:5;backdrop-filter:blur(12px);box-shadow:0 0 35px #6d28d922}
+.info h2{margin:0 0 7px;color:#d8c8ff;font-size:22px}
+.info p{margin:0;color:#c5c4e7;line-height:1.5;font-size:13px}
+.hint{position:absolute;top:125px;width:100%;text-align:center;font-size:11px;color:#aaa8d4;letter-spacing:1px;z-index:2}
+footer{position:absolute;top:18px;right:20px;color:#77759c;font-size:10px;z-index:3}
+@keyframes pulse{from{opacity:.55;scale:.95}to{opacity:1;scale:1.08}}
+@media(max-width:600px){.galaxy{top:43%;width:92vw;height:92vw}.hint{top:105px}.info{bottom:15px}.sun{width:43px;height:43px}.o5{width:94%;height:94%}footer{display:none}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<header>
+<h1>COSMIC DREAMS</h1>
+<p>EXPLORE THE INFINITE</p>
+</header>
+<div class="hint">✦ CLICK A PLANET TO DISCOVER ITS WORLD ✦</div>
+<div class="galaxy">
+<div class="nebula"></div>
+<div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div><div class="orbit o4"></div><div class="orbit o5"></div>
+<div class="sun" title="The Sun"></div>
+<button class="planet mercury" style="margin:-6px" onclick="showPlanet('Mercury')" aria-label="Mercury"></button>
+<button class="planet venus" style="margin:-10px" onclick="showPlanet('Venus')" aria-label="Venus"></button>
+<button class="planet earth" style="margin:-11px" onclick="showPlanet('Earth')" aria-label="Earth"></button>
+<button class="planet mars" style="margin:-8px" onclick="showPlanet('Mars')" aria-label="Mars"></button>
+<button class="planet jupiter" style="margin:-17px" onclick="showPlanet('Jupiter')" aria-label="Jupiter"></button>
+</div>
+<div class="info" aria-live="polite">
+<h2 id="planetName">Welcome, Stargazer ✨</h2>
+<p id="planetInfo">A universe of wonders awaits. Click any glowing planet and begin your cosmic journey.</p>
+</div>
+<footer>MADE OF STARDUST ✦</footer>
+<script>
+const canvas=document.getElementById('stars');
+const ctx=canvas.getContext('2d');
+let stars=[];
+function resize(){
+ canvas.width=innerWidth*devicePixelRatio;
+ canvas.height=innerHeight*devicePixelRatio;
+ ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+ stars=Array.from({length:Math.min(240,Math.floor(innerWidth/4))},()=>({
+  x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+  r:Math.random()*1.5+.2,a:Math.random(),s:Math.random()*.018+.003
+ }));
+}
+function draw(){
+ ctx.clearRect(0,0,innerWidth,innerHeight);
+ for(const s of stars){
+  s.a+=s.s;
+  if(s.a>1||s.a<.15)s.s*=-1;
+  ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+  ctx.fillStyle=`rgba(220,225,255,${s.a})`;ctx.fill();
+ }
+ requestAnimationFrame(draw);
+}
+window.addEventListener('resize',resize);resize();draw();
+const planets={
+ Mercury:['The Swift Messenger ☄️','The smallest planet, racing around the Sun in just 88 Earth days. Its surface is covered in ancient craters.'],
+ Venus:['The Golden World 🌟','A brilliant world wrapped in thick clouds. Venus is the hottest planet in our solar system.'],
+ Earth:['Our Pale Blue Dot 🌍','Our home! A world of oceans, clouds and life, protected by an atmosphere and magnetic field.'],
+ Mars:['The Red Frontier 🔴','A rusty desert world with giant volcanoes, ancient river valleys and dreams of future explorers.'],
+ Jupiter:['King of the Planets 🪐','A giant world of swirling clouds, powerful storms and dozens of fascinating moons.']
+};
+function showPlanet(name){
+ document.getElementById('planetName').textContent=planets[name][0];
+ document.getElementById('planetInfo').textContent=planets[name][1];
+}
+</script>
+</body>
+</html>
